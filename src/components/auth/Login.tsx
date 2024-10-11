@@ -3,6 +3,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Form,
@@ -14,9 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { Spinner } from "../features/spinner";
-import { RocketIcon } from "@radix-ui/react-icons";
+import { Spinner } from "@/components/features/spinner";
 import FormLayout from "@/components/form/formLayout";
 
 const baseURL = `${process.env.NEXTAUTH_URL}/api/auth/register`;
@@ -50,33 +49,49 @@ export default function Login() {
       password: "",
     },
   });
-  function onSubmit(values: z.infer<typeof loginFormSchema>) {
+  async function onSubmit(values: z.infer<typeof loginFormSchema>) {
     const { email, password } = values;
     setLoading(true);
-    // axios
-    //   .post(baseURL, { email, password })
-    //   .then((response) => {
-    //     console.log("Response status:", response.status, response.statusText);
-    //     cookie.set("TOKEN", response.data.token, { path: "/" });
-    //     cookie.set("USER", response.data.user, { path: "/" });
-    //     setLoading(false);
-    //     toast({
-    //       title: "Success",
-    //       description: `Login successful.`,
-    //       variant: "default",
-    //     });
-    //     router.push("/");
-    //   })
-    //   .catch((error) => {
-    //     setError(true);
-    //     toast({
-    //       title: "Error",
-    //       description: `Login failed. Please try again. ${error.response?.statusText} ${error.response?.message}`,
-    //       variant: "destructive",
-    //     });
-    //     setLoading(false);
-    //   });
+
+    try {
+      const response = await signIn("credentials", {
+        redirect: false, // Allow us to control redirect manually
+        email,
+        password,
+        callbackUrl: "/",
+      });
+
+      if (response?.ok) {
+        toast({
+          title: "Success",
+          description: "Login successful.",
+          variant: "default",
+        });
+        // Redirect to the callback URL
+        window.location.href = response.url || "/";
+      } else {
+        // Handle errors such as incorrect credentials
+        toast({
+          title: "Error",
+          description:
+            response?.error ||
+            "Failed to login. Please check your credentials.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      // Handle unexpected errors
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      // Ensure loading state is disabled after process
+      setLoading(false);
+    }
   }
+
   return (
     <FormLayout action="login">
       <Form {...form}>

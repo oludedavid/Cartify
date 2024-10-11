@@ -53,7 +53,7 @@ const FloatingDockMobile = ({
         {open && (
           <motion.div
             layoutId="nav"
-            className="absolute bottom-full mb-2 inset-x-0 flex flex-col gap-2"
+            className="absolute bottom-full mb-2 inset-y-12 flex items-center flex-col gap-2"
           >
             {items.map((item, idx) => (
               <motion.div
@@ -73,9 +73,11 @@ const FloatingDockMobile = ({
                 transition={{ delay: (items.length - 1 - idx) * 0.05 }}
               >
                 {item.action ? (
-                  <Button onClick={item.action} className="w-full">
+                  <Button
+                    onClick={item.action}
+                    className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
+                  >
                     <div className="h-4 w-4">{item.icon}</div>
-                    {item.title}
                   </Button>
                 ) : (
                   <Link

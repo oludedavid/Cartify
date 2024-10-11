@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { getServerSession, SessionStrategy } from "next-auth";
 import axios from "axios";
 import UserActions from "@/actions/user";
-import bcrypt from "bcrypt";
 
 const userActions = new UserActions();
 
@@ -22,15 +21,24 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        //fetch login details from the database
-        const res = await axios.post("http://localhost:3000/api/auth/login", {
-          email: credentials?.email,
-          password: credentials?.password,
-        });
-        const user = res.data;
-        if (res.status === 200 && user) {
-          return user;
-        } else {
+        try {
+          const res = await axios.post("http://localhost:3000/api/auth/login", {
+            email: credentials?.email,
+            password: credentials?.password,
+          });
+          const user = res.data.user;
+
+          if (user) {
+            return {
+              id: user._id,
+              email: user.email,
+              name: user.fullName,
+            };
+          } else {
+            return null;
+          }
+        } catch (error) {
+          console.error("Error in authorize:", error);
           return null;
         }
       },
@@ -43,11 +51,8 @@ export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   jwt: {
     maxAge: 1 * 24 * 60 * 60,
-    //other decoding nd encoding options or other jwt config
   },
-  callbacks: {
-    // signIn, session callbacks
-  },
+  callbacks: {},
   pages: {
     signIn: "/signIn",
   },

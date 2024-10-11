@@ -1,9 +1,5 @@
 "use client";
-import {
-  signIn,
-  signOut,
-  useSession,
-} from "../../../node_modules/next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 const SigninButton = () => {

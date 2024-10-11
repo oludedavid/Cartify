@@ -1,9 +1,5 @@
 "use client";
-import {
-  signIn,
-  signOut,
-  useSession,
-} from "../../../node_modules/next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { FloatingDock } from "@/components/ui/floating-dock";
 import { IconHome, IconShoppingBag } from "@tabler/icons-react";
 import {
@@ -34,7 +30,7 @@ export function NavBar() {
         {
           title: "Sign out",
           icon: (
-            <ExitIcon className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+            <ExitIcon className="h-full w-full text-red-500 dark:text-neutral-300" />
           ),
           action: () => signOut(),
         },
@@ -57,7 +53,7 @@ export function NavBar() {
         {
           title: "Sign in",
           icon: (
-            <AvatarIcon className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+            <AvatarIcon className="h-full w-full text-neutral-500 dark:text-neutral-300 " />
           ),
           action: () => signIn(),
         },
@@ -78,13 +74,18 @@ export function NavBar() {
       ];
 
   return (
-    <div className="text-red-200 flex  justify-center items-center h-[14rem] w-screen bg-gray-700 px-10">
-      <h1 className="text-base text-center md:text-5xl"> Cartify</h1>
+    <div className="flex justify-between items-center px-10 py-6 bg-gray-700 sm:h-[14rem] w-screen ">
+      <h1 className="text-base text-center md:text-5xl text-red-400">
+        Cartify
+      </h1>
       <FloatingDock
-        desktopClassName=" bg-gray-400 text-red-200"
-        mobileClassName="translate-y-20"
+        desktopClassName=" bg-gray-400 text-red-200 cursor-pointer"
+        mobileClassName=""
         items={links}
       />
+      {session?.user && (
+        <p className="text-base text-red-400">{session.user.name}</p>
+      )}
     </div>
   );
 }

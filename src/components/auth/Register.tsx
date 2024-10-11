@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import FormLayout from "@/components/form/formLayout";
-import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -20,7 +19,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -56,9 +54,6 @@ const registerFormSchema = z.object({
       message: "Password must be at least 8 characters.",
     })
     .toLowerCase(),
-  badge: z
-    .enum(["potential_student", "student", "tutor", "admin"])
-    .default("potential_student"),
 });
 
 export default function RegistrationForm() {
@@ -68,7 +63,7 @@ export default function RegistrationForm() {
   const [loading, setLoading] = React.useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const baseURL = `${process.env.NEXTAUTH_URL}/api/auth/register`;
+  const baseURL = `http://localhost:3000/api/auth/register`;
 
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
@@ -81,8 +76,8 @@ export default function RegistrationForm() {
   });
   const { reset } = form;
   function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    const { fullName, email, password, confirmPassword, badge } = values;
-
+    const { fullName, email, password, confirmPassword } = values;
+    console.log(values);
     setLoading(true);
 
     if (password !== confirmPassword) {
@@ -92,9 +87,8 @@ export default function RegistrationForm() {
     }
 
     axios
-      .post(baseURL, { fullName, email, password, badge })
+      .post(baseURL, { fullName, email, password })
       .then((response) => {
-        console.log("Response status:", response.status, response.statusText);
         setLoading(false);
         toast({
           title: "Success",
@@ -102,11 +96,10 @@ export default function RegistrationForm() {
           variant: "default",
         });
         setRegister(true);
-        router.push("/login");
+        router.push("/signIn");
         reset();
       })
       .catch((error) => {
-        console.log("Error:", error);
         const errorMessage =
           error.response?.statusText ||
           "An error occurred during registration.";
@@ -138,7 +131,7 @@ export default function RegistrationForm() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col space-y-5"
+            className="flex flex-col space-y-5 text-white"
           >
             <FormField
               control={form.control}
@@ -152,7 +145,7 @@ export default function RegistrationForm() {
                       "0px 3.845px 13.459px 0px rgba(31, 82, 149, 0.16)",
                     borderRadius: "6px",
                   }}
-                  className="text-white w-[494px] h-[44px] flex items-center border border-solid rounded-md px-6 py-2"
+                  className="flex items-center border border-solid rounded-md px-6 py-2"
                 >
                   <FormControl className="w-full">
                     <Input
@@ -177,7 +170,7 @@ export default function RegistrationForm() {
                       "0px 3.845px 13.459px 0px rgba(31, 82, 149, 0.16)",
                     borderRadius: "6px",
                   }}
-                  className="text-white w-[494px] h-[44px] flex items-center border border-solid rounded-md px-6 py-2"
+                  className="text-white flex items-center border border-solid rounded-md px-6 py-2"
                 >
                   <FormControl className="w-full">
                     <Input
@@ -202,7 +195,7 @@ export default function RegistrationForm() {
                       "0px 3.845px 13.459px 0px rgba(31, 82, 149, 0.16)",
                     borderRadius: "6px",
                   }}
-                  className="w-[494px] h-[44px] flex items-center border border-solid rounded-md px-6 py-2"
+                  className=" flex items-center border border-solid rounded-md px-6 py-2"
                 >
                   <FormControl className="w-full">
                     <Input
@@ -228,7 +221,7 @@ export default function RegistrationForm() {
                       "0px 3.845px 13.459px 0px rgba(31, 82, 149, 0.16)",
                     borderRadius: "6px",
                   }}
-                  className="w-[494px] h-[44px] flex items-center border border-solid rounded-md px-6 py-2"
+                  className=" flex items-center border border-solid rounded-md px-6 py-2"
                 >
                   <FormControl className="w-full">
                     <Input

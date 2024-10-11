@@ -3,6 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export default function FormLayout({
   children,
@@ -24,8 +25,9 @@ export default function FormLayout({
             Easily browse products, add items to your cart, and enjoy a smooth
             checkout. Let’s start shopping!
           </p>
+
           <div>
-            <Link href={`${action === "register" ? "/signIn" : "/register"}`}>
+            {action === "register" ? (
               <Button
                 className="text-base px-6 lg:px-12 font-medium"
                 style={{
@@ -34,10 +36,25 @@ export default function FormLayout({
                   border: "1px rgba(230, 230, 230, 0.36)",
                   color: "#1F1B2A",
                 }}
+                onClick={() => signIn()}
               >
-                {action === "register" ? "Sign in" : "Sign up"}
+                Sign In
               </Button>
-            </Link>
+            ) : (
+              <Link href="/register">
+                <Button
+                  className="text-base px-6 lg:px-12 font-medium"
+                  style={{
+                    background: "#DAD7E2",
+                    borderRadius: "32px",
+                    border: "1px rgba(230, 230, 230, 0.36)",
+                    color: "#1F1B2A",
+                  }}
+                >
+                  Sign up
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
         <div className="flex-1 p-6 md:p-12">{children}</div>
